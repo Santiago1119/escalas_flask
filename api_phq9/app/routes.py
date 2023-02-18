@@ -11,7 +11,8 @@ def index():
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
-    return jsonify({'users': [user.__dict__ for user in users]})
+    print(users)
+    return jsonify({'users': [user.to_dict() for user in users]})
 
 @app.route('/users', methods=['POST'])
 def create_user():
@@ -23,4 +24,8 @@ def create_user():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({'user': user.__dict__}), 201
+    return jsonify({
+    "id": user.id,
+    "name": user.name,
+    "email": user.email
+}), 201
