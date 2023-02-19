@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from app import app, db
 from .models import AnswersPHQ9, ResultPHQ9
 
-phq9_bp = Blueprint('pha9', __name__, url_prefix='/phq9')
+phq9_bp = Blueprint('phq9', __name__, url_prefix='/phq9')
 
 @phq9_bp.route('/answers/<int:user_id>', methods=['GET'])
 def get_answers(user_id):
