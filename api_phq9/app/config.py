@@ -9,7 +9,7 @@ class Config:
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'secret-key'
-    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/phq_9'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/escalas'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class ProductionConfig(Config):
