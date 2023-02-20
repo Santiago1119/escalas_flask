@@ -13,21 +13,32 @@ def get_answers(user_id:int)->jsonify:
         user_id (int): id del usuario
 
     Returns:
-        jsonify: archivo json con el valor de cada respuésta del usuario
+        jsonify: archivo json con el valor de cada respuesta del usuario y tambien transformado a texto
     """
-    def question_value(answers:object)->str:
+    def question_value(answers)->list:
+        """Transforma los valores de la base de datos en texto para la fácil comprensión
+
+        Args:
+            answers (class_SQLAlchemy): Consulta de SQLAlchemy a la base de datos
+
+        Returns:
+            list: lista con lo que respondió el usuario en el formulario PHQ9
+        """
         answers_dict = [answer.to_dict() for answer in answers]
         user_response = {}
         
         for answer_dict in answers_dict:
             for value in answer_dict:
-                if re.match(r"^answer_\d+$", value) and answer_dict[value] == 0:
+                
+                regular_expresion = re.match(r"^answer_\d+$", value)
+                
+                if regular_expresion and answer_dict[value] == 0:
                     user_response[value] = 'Ningún día'
-                elif re.match(r"^answer_\d+$", value) and answer_dict[value] == 1:
+                elif regular_expresion and answer_dict[value] == 1:
                     user_response[value] = 'Varios días'
-                elif re.match(r"^answer_\d+$", value) and answer_dict[value] == 2:
+                elif regular_expresion and answer_dict[value] == 2:
                     user_response[value] = 'Más de la mitad de los días'
-                elif re.match(r"^answer_\d+$", value) and answer_dict[value] == 3:
+                elif regular_expresion and answer_dict[value] == 3:
                     user_response[value] = 'Casi todos los días'
 
             
@@ -37,9 +48,12 @@ def get_answers(user_id:int)->jsonify:
     answers = AnswersPHQ9.query.filter_by(user_id= user_id)
     
     user_responses = question_value(answers)
-    return jsonify({'answers': user_responses,
-                    'db_values': [answer.to_dict() for answer in answers]})
-
+    
+    if len(user_responses) > 0:
+        return jsonify({'answers': user_responses,
+                        'db_values': [answer.to_dict() for answer in answers]})
+    else:
+        return jsonify({'message': 'No existe el usuario'})
 
 
 @phq9_bp.route('/register', methods=['POST'])
@@ -48,6 +62,22 @@ def register_phq9()->jsonify:
 
     Returns:
         jsonify: archivo json con el id de usuario, las respuestas del formulario, y el resultado de la escala
+        
+    estructura formato json solicitado: 
+    
+            {
+        "user_id": 3,
+        "answer_1": 1,
+        "answer_2": 3,
+        "answer_3": 2,
+        "answer_4": 2,
+        "answer_5": 1,
+        "answer_6": 0,
+        "answer_7": 1,
+        "answer_8": 0,
+        "answer_9": 1
+    }
+    
     """
     
     user_id = request.json.get('user_id')

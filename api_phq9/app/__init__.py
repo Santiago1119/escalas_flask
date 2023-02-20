@@ -14,4 +14,5 @@ app.register_blueprint(phq9_bp)
 from .user import user_bp
 app.register_blueprint(user_bp)
 
-from app import routes
+from .motivation_treatment import motivation_treatment_bp
+app.register_blueprint(motivation_treatment_bp)
